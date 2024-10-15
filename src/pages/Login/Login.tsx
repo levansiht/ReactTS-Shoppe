@@ -31,6 +31,7 @@ export default function Login() {
               <div className='mt-3'>
                 <input
                   type='password'
+                  autoComplete='on'
                   className='p-3 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
                   placeholder='Password'
                   {...register('password', { required: 'Password không được để trống' })}
