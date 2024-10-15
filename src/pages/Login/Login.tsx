@@ -1,6 +1,17 @@
+import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
 export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm()
+
+  const onSubmit = handleSubmit((data) => {
+    // console.log(data)
+  })
+
   return (
     <div className='bg-orange'>
       <div className='max-w-7xl mx-auto px-4'>
@@ -11,18 +22,18 @@ export default function Login() {
               <div className='mt-8'>
                 <input
                   type='email'
-                  name='email'
-                  placeholder='Email'
                   className='p-3 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+                  placeholder='Email'
+                 {...register('email', { required: 'Email không được để trống' })} 
                 />
                 <div className='mt-1 text-red-600 min-h-[1rem] text-sm'></div>
               </div>
               <div className='mt-3'>
                 <input
                   type='password'
-                  name='password'
-                  placeholder='Password'
                   className='p-3 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
+                  placeholder='Password'
+                  {...register('password', { required: 'Password không được để trống' })}
                 />
                 <div className='mt-1 text-red-600 min-h-[1rem] text-sm'></div>
               </div>
