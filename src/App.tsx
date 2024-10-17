@@ -1,10 +1,14 @@
-import useRouteElements from "./useRouteElements"
-
+import { ToastContainer } from 'react-toastify'
+import useRouteElements from './useRouteElements'
+import 'react-toastify/dist/ReactToastify.css'
 
 function App() {
-  const  routeElements = useRouteElements()
+  const routeElements = useRouteElements()
   return (
-    <div>{routeElements}</div>
+    <div>
+      {routeElements}
+      <ToastContainer />
+    </div>
   )
 }
 
