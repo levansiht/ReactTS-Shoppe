@@ -8,6 +8,6 @@ export interface User {
   date_of_birth: null
   address: string
   phone: string
-  createdAt: string
-  updatedAt: string
+  createdAt?: string
+  updatedAt?: string
 }
