@@ -1,5 +1,5 @@
 import { useRef, useState, useId, ElementType } from 'react'
-import { FloatingPortal, useFloating, arrow, shift, offset } from '@floating-ui/react-dom-interactions'
+import { FloatingPortal, useFloating, arrow, shift, offset, type Placement } from '@floating-ui/react-dom-interactions'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Props {
@@ -8,14 +8,23 @@ interface Props {
   className?: string
   as?: ElementType
   initialOpen?: boolean
+  placement?: Placement
 }
 
-export default function Popover({ children, renderPopover, className, as: Element = 'div', initialOpen }: Props) {
+export default function Popover({
+  children,
+  renderPopover,
+  className,
+  as: Element = 'div',
+  initialOpen,
+  placement = 'bottom-end'
+}: Props) {
   const [open, setOpen] = useState(initialOpen || false)
   const arrowRef = useRef(null)
   const id = useId()
   const { x, y, reference, floating, strategy, middlewareData } = useFloating({
-    middleware: [offset(6), shift(), arrow({ element: arrowRef })]
+    middleware: [offset(6), shift(), arrow({ element: arrowRef })],
+    placement: placement
   })
   const showPopover = () => {
     setOpen(true)
@@ -44,14 +53,14 @@ export default function Popover({ children, renderPopover, className, as: Elemen
               exit={{ opacity: 0, transform: 'scale(0)' }}
               transition={{ duration: 0.2 }}
             >
-              <div
+              <span
                 ref={arrowRef}
-                className='border-x-transparent border-t-transparent boder-b-white border-[11px] absolute translate-y-[-95%] z-10'
+                className='border-x-transparent border-t-transparent border-b-white border-[11px] absolute translate-y-[-95%] z-10'
                 style={{
                   left: middlewareData.arrow?.x,
                   right: middlewareData.arrow?.y
                 }}
-              ></div>
+              ></span>
               {renderPopover}
             </motion.div>
           )}
