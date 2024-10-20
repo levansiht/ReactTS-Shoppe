@@ -6,7 +6,7 @@ import Input from '../../components/Input'
 import { isAxiosUnprocessableEntityError } from '../../utils/utils'
 import { ErrorResponse } from '../../types/utils.type'
 import { useMutation } from '@tanstack/react-query'
-import { loginAccount } from '../../apis/auth.api'
+import authApi from '../../apis/auth.api'
 import { useContext } from 'react'
 import { AppContext } from '../../contexts/app.context'
 import Button from '../../components/Button'
@@ -25,7 +25,7 @@ export default function Login() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
   const loginAccountMutation = useMutation({
-    mutationFn: (body: FormData) => loginAccount(body)
+    mutationFn: (body: FormData) => authApi.loginAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
     loginAccountMutation.mutate(data, {
