@@ -4,13 +4,15 @@ import { AppContext } from '../../contexts/app.context'
 import { useContext } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { logoutAccount } from '../../apis/auth.api'
+import path from '../../constants/path'
 
 export default function Header() {
-  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: () => logoutAccount(),
     onSuccess: () => {
       setIsAuthenticated(false)
+      setProfile(null)
     }
   })
   const handleLogout = () => {
@@ -92,17 +94,17 @@ export default function Header() {
                     alt='avatar'
                   />
                 </div>
-                <div className=''>LeVanSy</div>
+                <div className=''>{profile?.email}</div>
               </div>
             </Popover>
           )}
           {!isAuthenticated && (
             <div className='flex items-center'>
-              <Link to='/register' className='mx-3 capitalize hover:text-white/70'>
+              <Link to={path.register} className='mx-3 capitalize hover:text-white/70'>
                 Đăng kí
               </Link>
               <div className='border-r-[1px] border-r-white/40 h-4'></div>
-              <Link to='/login' className='mx-3 capitalize hover:text-white/70'>
+              <Link to={path.login} className='mx-3 capitalize hover:text-white/70'>
                 Đăng nhập
               </Link>
             </div>

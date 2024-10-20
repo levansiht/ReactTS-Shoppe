@@ -23,7 +23,7 @@ export default function Register() {
     resolver: yupResolver(schema)
   })
   const navigate = useNavigate()
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const registerAccountMutation = useMutation({
     mutationFn: (body: Omit<FormData, 'confirm_password'>) => registerAccount(body)
   })
@@ -31,9 +31,9 @@ export default function Register() {
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
-      onSuccess: () => {
-        // console.log(data)
+      onSuccess: (data) => {
         setIsAuthenticated(true)
+        setProfile(data.data.data.user)
         navigate('/')
       },
       onError: (error) => {

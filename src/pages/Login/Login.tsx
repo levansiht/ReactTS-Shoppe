@@ -22,16 +22,16 @@ export default function Login() {
   } = useForm<FormData>({
     resolver: yupResolver(loginSchema)
   })
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
   const loginAccountMutation = useMutation({
     mutationFn: (body: FormData) => loginAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
     loginAccountMutation.mutate(data, {
-      onSuccess: () => {
-        // console.log(data)
+      onSuccess: (data) => {
         setIsAuthenticated(true)
+        setProfile(data.data.data.user)
         navigate('/')
       },
       onError: (error) => {
