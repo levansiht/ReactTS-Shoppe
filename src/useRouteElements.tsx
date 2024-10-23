@@ -5,6 +5,7 @@ import Register from './pages/Register'
 import RegisterLayout from './layouts/RegisterLayout'
 import MainLayout from './layouts/MainLayout'
 import Profile from './pages/Profile'
+import ProductDetail from './pages/ProductDetail'
 import { AppContext } from './contexts/app.context'
 import { useContext } from 'react'
 import path from './constants/path'
@@ -56,6 +57,15 @@ export default function useRouteElements() {
           )
         }
       ]
+    },
+    {
+      path: path.productDetail,
+      index: true,
+      element: (
+        <MainLayout>
+          <ProductDetail />
+        </MainLayout>
+      )
     },
     {
       path: '',

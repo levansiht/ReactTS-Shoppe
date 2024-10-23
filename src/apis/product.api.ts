@@ -1,4 +1,4 @@
-import { ProductList, ProductListConfig } from '../types/product.type'
+import { Product, ProductList, ProductListConfig } from '../types/product.type'
 import http from '../utils/http'
 import { SuccessResponse } from '../types/utils.type'
 
@@ -8,7 +8,7 @@ const productApi = {
     return http.get<SuccessResponse<ProductList>>(URL, { params })
   },
   getProductDetail(id: string) {
-    return http.get<SuccessResponse<ProductList>>(`${URL}/${id}`)
+    return http.get<SuccessResponse<Product>>(`${URL}/${id}`)
   }
 }
 
