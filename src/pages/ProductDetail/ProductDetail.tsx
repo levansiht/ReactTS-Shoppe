@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import InputNumber from 'src/components/InputNumber'
 import ProductRating from 'src/components/ProductRating'
+import { Product } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, rateSale } from 'src/utils/utils'
 
 export default function ProductDetail() {
@@ -13,7 +15,32 @@ export default function ProductDetail() {
       return productApi.getProductDetail(id as string)
     }
   })
+  const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
+  const [activeImage, setActiveImage] = useState('')
   const product = productDetailData?.data.data
+  const currentImages = useMemo(
+    () => (product ? product.images.slice(...currentIndexImages) : []),
+    [product, currentIndexImages]
+  )
+  useEffect(() => {
+    if (product) {
+      setActiveImage(product.images[0])
+    }
+  }, [product])
+  const nextImage = () => {
+    if (currentIndexImages[1] < (product as Product).images.length) {
+      setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
+    }
+  }
+  const prevImage = () => {
+    if (currentIndexImages[0] > 0) {
+      setCurrentIndexImages((prev) => [prev[0] - 1, prev[1] - 1])
+    }
+  }
+  const handleChooseActiveImage = (img: string) => {
+    setActiveImage(img)
+  }
+
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -23,13 +50,16 @@ export default function ProductDetail() {
             <div className='col-span-5'>
               <div className='relative w-full pt-[100%] shadow'>
                 <img
-                  src={product.image}
+                  src={activeImage}
                   alt={product.name}
                   className='absolute top-0 left-0 bg-white w-full h-full object-cover'
                 />
               </div>
               <div className='relative mt-4 grid grid-cols-5 gap-1'>
-                <button className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'>
+                <button
+                  className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
+                  onClick={prevImage}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
@@ -41,12 +71,16 @@ export default function ProductDetail() {
                     <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5 8.25 12l7.5-7.5' />
                   </svg>
                 </button>
-                {product.images.slice(0, 5).map((image, index) => {
-                  const isActive = index === 0
+                {currentImages.slice(0, 5).map((image) => {
+                  const isActive = image === activeImage
                   return (
-                    <div className='relative w-full pt-[100%]' key={image}>
+                    <div
+                      className='relative w-full pt-[100%]'
+                      key={image}
+                      onMouseEnter={() => handleChooseActiveImage(image)}
+                    >
                       <img
-                        src={product.image}
+                        src={image}
                         alt={product.name}
                         className='absolute top-0 left-0 bg-white w-full h-full object-cover cursor-pointer'
                       />
@@ -55,7 +89,10 @@ export default function ProductDetail() {
                     </div>
                   )
                 })}
-                <button className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'>
+                <button
+                  className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
+                  onClick={nextImage}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
