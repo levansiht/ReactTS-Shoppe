@@ -3,9 +3,9 @@ import classNames from 'classnames'
 import { omit } from 'lodash'
 import path from 'src/constants/path'
 import { order as orderConstant } from 'src/constants/product'
-import { QueryConfig } from '../../ProductList'
 import { ProductListConfig } from 'src/types/product.type'
 import { sortBy } from 'src/constants/product'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 interface Props {
   queryConfig: QueryConfig
   pageSize: number
