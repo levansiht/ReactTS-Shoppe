@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import React, { useContext, useEffect, useMemo } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import purchaseApi from 'src/apis/purchase.api'
 import Button from 'src/components/Button'
@@ -8,140 +8,51 @@ import path from 'src/constants/path'
 import { purchasesStatus } from 'src/constants/purchase'
 import { Purchase } from 'src/types/purchase.type'
 import { formatCurrency, generateNameId } from 'src/utils/utils'
-// import { produce } from 'immer'
+import { produce } from 'immer'
 import keyBy from 'lodash/keyBy'
 import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
 import noproduct from 'src/assets/images/no-product.png'
 
+interface ExtendedPurchase extends Purchase {
+  disabled: boolean
+  checked: boolean
+}
+
 export default function Cart() {
-  // const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
+  const [extendedPurchases, setExtendedPurchases] = useState<ExtendedPurchase[]>([])
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
   })
-  const updatePurchaseMutation = useMutation({
-    mutationFn: purchaseApi.updatePurchase,
-    onSuccess: () => {
-      refetch()
-    }
-  })
-  const buyProductsMutation = useMutation({
-    mutationFn: purchaseApi.buyProducts,
-    onSuccess: (data) => {
-      refetch()
-      toast.success(data.data.message, {
-        position: 'top-center',
-        autoClose: 1000
-      })
-    }
-  })
-  const deletePurchasesMutation = useMutation({
-    mutationFn: purchaseApi.deletePurchase,
-    onSuccess: () => {
-      refetch()
-    }
-  })
-  // const location = useLocation()
-  // const choosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
+
   const purchasesInCart = purchasesInCartData?.data.data
-  // const isAllChecked = useMemo(() => extendedPurchases.every((purchase) => purchase.checked), [extendedPurchases])
-  // const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
-  // const checkedPurchasesCount = checkedPurchases.length
-  // const totalCheckedPurchasePrice = useMemo(
-  //   () =>
-  //     checkedPurchases.reduce((result, current) => {
-  //       return result + current.product.price * current.buy_count
-  //     }, 0),
-  //   [checkedPurchases]
-  // )
-  // const totalCheckedPurchaseSavingPrice = useMemo(
-  //   () =>
-  //     checkedPurchases.reduce((result, current) => {
-  //       return result + (current.product.price_before_discount - current.product.price) * current.buy_count
-  //     }, 0),
-  //   [checkedPurchases]
-  // )
+  const isAllChecked = extendedPurchases.every((purchase) => purchase.checked)
+  useEffect(() => {
+    setExtendedPurchases(
+      purchasesInCart?.map((purchase) => ({
+        ...purchase,
+        disabled: false,
+        checked: false
+      })) || []
+    )
+  }, [purchasesInCart])
 
-  // useEffect(() => {
-  //   setExtendedPurchases((prev) => {
-  //     const extendedPurchasesObject = keyBy(prev, '_id')
-  //     return (
-  //       purchasesInCart?.map((purchase) => {
-  //         const isChoosenPurchaseFromLocation = choosenPurchaseIdFromLocation === purchase._id
-  //         return {
-  //           ...purchase,
-  //           disabled: false,
-  //           checked: isChoosenPurchaseFromLocation || Boolean(extendedPurchasesObject[purchase._id]?.checked)
-  //         }
-  //       }) || []
-  //     )
-  //   })
-  // }, [purchasesInCart, choosenPurchaseIdFromLocation])
-
-  // useEffect(() => {
-  //   return () => {
-  //     history.replaceState(null, '')
-  //   }
-  // }, [])
-
-  // const handleCheck = (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setExtendedPurchases(
-  //     produce((draft) => {
-  //       draft[purchaseIndex].checked = event.target.checked
-  //     })
-  //   )
-  // }
-
-  // const handleCheckAll = () => {
-  //   setExtendedPurchases((prev) =>
-  //     prev.map((purchase) => ({
-  //       ...purchase,
-  //       checked: !isAllChecked
-  //     }))
-  //   )
-  // }
-
-  // const handleTypeQuantity = (purchaseIndex: number) => (value: number) => {
-  //   setExtendedPurchases(
-  //     produce((draft) => {
-  //       draft[purchaseIndex].buy_count = value
-  //     })
-  //   )
-  // }
-
-  // const handleQuantity = (purchaseIndex: number, value: number, enable: boolean) => {
-  //   if (enable) {
-  //     const purchase = extendedPurchases[purchaseIndex]
-  //     setExtendedPurchases(
-  //       produce((draft) => {
-  //         draft[purchaseIndex].disabled = true
-  //       })
-  //     )
-  //     updatePurchaseMutation.mutate({ product_id: purchase.product._id, buy_count: value })
-  //   }
-  // }
-
-  // const handleDelete = (purchaseIndex: number) => () => {
-  //   const purchaseId = extendedPurchases[purchaseIndex]._id
-  //   deletePurchasesMutation.mutate([purchaseId])
-  // }
-
-  // const handleDeleteManyPurchases = () => {
-  //   const purchasesIds = checkedPurchases.map((purchase) => purchase._id)
-  //   deletePurchasesMutation.mutate(purchasesIds)
-  // }
-
-  // const handleBuyPurchases = () => {
-  //   if (checkedPurchases.length > 0) {
-  //     const body = checkedPurchases.map((purchase) => ({
-  //       product_id: purchase.product._id,
-  //       buy_count: purchase.buy_count
-  //     }))
-  //     buyProductsMutation.mutate(body)
-  //   }
-  // }
-
+  const handleCheck = (productIndex: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setExtendedPurchases(
+      produce((draft) => {
+        draft[productIndex].checked = e.target.checked
+      })
+    )
+  }
+  const handleCheckAll = () => {
+    setExtendedPurchases((prev) =>
+      prev.map((purchase) => ({
+        ...purchase,
+        checked: !isAllChecked
+      }))
+    )
+  }
   return (
     <div className='bg-neutral-100 py-16'>
       <div className='container'>
@@ -156,8 +67,8 @@ export default function Cart() {
                       <input
                         type='checkbox'
                         className='h-5 w-5 accent-orange'
-                        // checked={isAllChecked}
-                        // onChange={handleCheckAll}
+                        checked={isAllChecked}
+                        onChange={handleCheckAll}
                       />
                     </div>
                     <div className='flex-grow text-black'>Sản phẩm</div>
@@ -174,7 +85,7 @@ export default function Cart() {
               </div>
               {/* {purchasesInCart?.length > 0 && ( */}
               <div className='my-3 rounded-sm bg-white p-5 shadow'>
-                {purchasesInCart?.map((purchase, index) => (
+                {extendedPurchases?.map((purchase, index) => (
                   <div
                     key={purchase.id}
                     className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'
@@ -185,8 +96,8 @@ export default function Cart() {
                           <input
                             type='checkbox'
                             className='h-5 w-5 accent-orange'
-                            // checked={purchase.checked}
-                            // onChange={handleCheck(index)}
+                            checked={purchase.checked}
+                            onChange={handleCheck(index)}
                           />
                         </div>
                         <div className='flex-grow'>
@@ -272,11 +183,11 @@ export default function Cart() {
                 <input
                   type='checkbox'
                   className='h-5 w-5 accent-orange'
-                  // checked={isAllChecked}
-                  // onChange={handleCheckAll}
+                  checked={isAllChecked}
+                  onChange={handleCheckAll}
                 />
               </div>
-              <button className='mx-3 border-none bg-none'>Chọn tất cả</button>
+              <button className='mx-3 border-none bg-none'>Chọn tất cả({extendedPurchases.length})</button>
               <button className='mx-3 border-none bg-none'>Xóa</button>
             </div>
 
