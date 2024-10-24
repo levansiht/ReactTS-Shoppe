@@ -14,6 +14,7 @@ import { purchasesStatus } from 'src/constants/purchase'
 import purchaseApi from 'src/apis/purchase.api'
 import { formatCurrency } from 'src/utils/utils'
 import noproduct from 'src/assets/images/no-product.png'
+import { queryClient } from 'src/main'
 
 type FormData = Pick<Schema, 'name'>
 
@@ -35,12 +36,14 @@ export default function Header() {
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)
+      queryClient.removeQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
     }
   })
 
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchase', { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
+    enabled: isAuthenticated
   })
   const purchasesInCart = purchasesInCartData?.data.data
 
@@ -224,7 +227,7 @@ export default function Header() {
                         </div>
                         <Link
                           className='rounded-sm bg-orange px-4 py-2 capitalize text-white hover:bg-opacity-90'
-                          to={''}
+                          to={path.cart}
                         >
                           Xem giỏ hàng
                         </Link>
