@@ -9,6 +9,9 @@ import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } 
 import Product from '../ProductList/components/Product'
 import QuantityController from 'src/components/QuantityController'
 import purchaseApi from 'src/apis/purchase.api'
+import { queryClient } from 'src/main'
+import { purchasesStatus } from 'src/constants/purchase'
+import { toast } from 'react-toastify'
 
 export default function ProductDetail() {
   const { nameId } = useParams()
@@ -86,7 +89,15 @@ export default function ProductDetail() {
     imgRef.current?.removeAttribute('style')
   }
   const addToCart = () => {
-    addToCartMutation.mutate({ product_id: product?.id as string, buy_count: buyCount })
+    addToCartMutation.mutate(
+      { product_id: product?.id as string, buy_count: buyCount },
+      {
+        onSuccess: () => {
+          toast.success('Thêm vào giỏ hàng thành công', { autoClose: 1000 })
+          queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
+        }
+      }
+    )
   }
 
   if (!product) return null
