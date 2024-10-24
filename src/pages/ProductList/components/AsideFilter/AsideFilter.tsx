@@ -1,7 +1,6 @@
 import Button from 'src/components/Button'
 import path from 'src/constants/path'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
-import { QueryConfig } from '../../ProductList'
 import { Category } from 'src/types/category.type'
 import classNames from 'classnames'
 import InputNumber from 'src/components/InputNumber'
@@ -11,6 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { NoUndefinedField } from 'src/types/utils.type'
 import RatingStars from '../RatingStars'
 import { omit } from 'lodash'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 interface Props {
   queryConfig: QueryConfig
   categories: Category[]
@@ -37,7 +37,6 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
 
   const navigate = useNavigate()
   const valueForm = watch()
-  console.log(errors)
 
   const onSubmit = handleSubmit((data) => {
     navigate({

@@ -14,13 +14,16 @@ export default function ProductList() {
     queryKey: ['products', queryConfig],
     queryFn: () => {
       return productApi.getProducts(queryConfig as ProductListConfig)
-    }
+    },
+    // keepPreviousData: true
+    staleTime: Infinity
   })
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: () => {
       return categoryApi.getCategories()
-    }
+    },
+    staleTime: Infinity
   })
   return (
     <div className='bg-gray-200 py-6'>
