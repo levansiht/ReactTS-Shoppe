@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
@@ -8,6 +8,7 @@ import { Product as ProductType, ProductListConfig } from 'src/types/product.typ
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
 import Product from '../ProductList/components/Product'
 import QuantityController from 'src/components/QuantityController'
+import purchaseApi from 'src/apis/purchase.api'
 
 export default function ProductDetail() {
   const { nameId } = useParams()
@@ -32,7 +33,10 @@ export default function ProductDetail() {
     enabled: Boolean(product),
     staleTime: Infinity
   })
-  console.log(productData)
+
+  const addToCartMutation = useMutation({
+    mutationFn: (body: { product_id: string; buy_count: number }) => purchaseApi.addToCart(body)
+  })
 
   const currentImages = useMemo(
     () => (product ? product.images.slice(...currentIndexImages) : []),
@@ -80,6 +84,9 @@ export default function ProductDetail() {
 
   const handleMouseLeave = () => {
     imgRef.current?.removeAttribute('style')
+  }
+  const addToCart = () => {
+    addToCartMutation.mutate({ product_id: product?.id as string, buy_count: buyCount })
   }
 
   if (!product) return null
@@ -189,7 +196,10 @@ export default function ProductDetail() {
                   <div className='ml-6 text-sm text-gray-500'>{product.quantity} sản phẩm có sẵn</div>
                 </div>
                 <div className='mt-8 flex items-center'>
-                  <button className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange shadow-sm hover:bg-orange/5'>
+                  <button
+                    onClick={addToCart}
+                    className='flex h-12 items-center justify-center rounded-sm border border-orange bg-orange/10 px-5 capitalize text-orange shadow-sm hover:bg-orange/5'
+                  >
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
